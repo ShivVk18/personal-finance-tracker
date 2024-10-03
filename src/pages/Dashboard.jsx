@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Card, Row } from "antd";
+import { Card, Row, Col } from "antd";
 import { Line, Pie } from "@ant-design/charts";
 import moment from "moment";
 import TransactionSearch from "../components/TransactionSearch";
-import Header from "../components/Header/Header";
+import Header from "../components/Header/Header"; // Updated Header component
 import AddIncomeModal from "../components/Modals/AddIncome";
 import AddExpenseModal from "../components/Modals/AddExpense";
 import Cards from "../components/Cards";
@@ -24,8 +24,7 @@ function Dashboard() {
     const [currentBalance, setCurrentBalance] = useState(0);
     const [income, setIncome] = useState(0);
     const [expenses, setExpenses] = useState(0);
-
-    
+    const [resetLoading, setResetLoading] = useState(false); // Loading state for reset
 
     const processChartData = () => {
         const balanceData = [];
@@ -67,6 +66,7 @@ function Dashboard() {
     };
 
     const { balanceData, spendingDataArray } = processChartData();
+    
     const showExpenseModal = () => {
         setIsExpenseModalVisible(true);
     };
@@ -169,11 +169,29 @@ function Dashboard() {
         colorField: "category",
     };
 
-    function reset() {
-        console.log("resetting");
-    }
+    const reset = async () => {
+        setResetLoading(true);
+        setTransactions([]); // Reset transactions
+        setIncome(0);
+        setExpenses(0);
+        setCurrentBalance(0);
 
-    const cardClass = "shadow-lg rounded-md p-6 m-8 min-w-[400px] flex-1";
+        try {
+            const q = query(collection(db, `users/${user.uid}/transactions`));
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach(async (doc) => {
+                await doc.ref.delete(); // Delete each transaction document
+            });
+            toast.success("Transactions reset successfully!");
+        } catch (error) {
+            console.error("Error resetting transactions: ", error);
+            toast.error("Error resetting transactions.");
+        } finally {
+            setResetLoading(false);
+        }
+    };
+
+    const cardClass = "shadow-lg rounded-lg p-6 m-4 bg-white flex-1 transition-transform duration-300 hover:scale-105";
 
     function exportToCsv() {
         const csv = unparse(transactions, {
@@ -190,61 +208,68 @@ function Dashboard() {
     }
 
     return (
-        <div className="dashboard-container p-6 bg-gray-100 min-h-screen">
+        <div className="min-h-screen bg-gray-100 flex flex-col">
             <Header />
-            {loading ? (
-                <Loader />
-            ) : (
-                <>
-                    <Cards
-                        currentBalance={currentBalance}
-                        income={income}
-                        expenses={expenses}
-                        showExpenseModal={showExpenseModal}
-                        showIncomeModal={showIncomeModal}
-                        cardClass={cardClass}
-                        reset={reset}
-                    />
+            <div className="mt-16"> {/* Add margin to push content below the fixed header */}
+                {loading ? (
+                    <Loader />
+                ) : (
+                    <div className="flex flex-col p-6 space-y-6">
+                        <Cards
+                            currentBalance={currentBalance}
+                            income={income}
+                            expenses={expenses}
+                            showExpenseModal={showExpenseModal}
+                            showIncomeModal={showIncomeModal}
+                            cardClass={cardClass}
+                            reset={reset}
+                            resetLoading={resetLoading} // Pass reset loading state
+                        />
 
-                    <AddExpenseModal
-                        isExpenseModalVisible={isExpenseModalVisible}
-                        handleExpenseCancel={handleExpenseCancel}
-                        onFinish={onFinish}
-                    />
-                    <AddIncomeModal
-                        isIncomeModalVisible={isIncomeModalVisible}
-                        handleIncomeCancel={handleIncomeCancel}
-                        onFinish={onFinish}
-                    />
-                    {transactions.length === 0 ? (
-                        <NoTransactions />
-                    ) : (
-                        <>
-                            <Row gutter={16}>
-                                <Card bordered={true} className={cardClass}>
-                                    <h2 className="text-xl font-semibold">Financial Statistics</h2>
-                                    <Line {...{ ...balanceConfig, data: balanceData }} />
-                                </Card>
+                        <AddExpenseModal
+                            isExpenseModalVisible={isExpenseModalVisible}
+                            handleExpenseCancel={handleExpenseCancel}
+                            onFinish={onFinish}
+                        />
+                        <AddIncomeModal
+                            isIncomeModalVisible={isIncomeModalVisible}
+                            handleIncomeCancel={handleIncomeCancel}
+                            onFinish={onFinish}
+                        />
+                        {transactions.length === 0 ? (
+                            <NoTransactions />
+                        ) : (
+                            <>
+                                <Row gutter={16} justify="space-between">
+                                    <Col xs={24} sm={12} md={12} lg={12}>
+                                        <Card bordered={true} className={cardClass}>
+                                            <h2 className="text-2xl font-semibold text-gray-800">Financial Statistics</h2>
+                                            <Line {...{ ...balanceConfig, data: balanceData }} />
+                                        </Card>
+                                    </Col>
 
-                                <Card bordered={true} className={`${cardClass} flex-[0.45]`}>
-                                    <h2 className="text-xl font-semibold">Total Spending</h2>
-                                    {spendingDataArray.length == 0 ? (
-                                        <p>Seems like you haven't spent anything till now...</p>
-                                    ) : (
-                                        <Pie {...{ ...spendingConfig, data: spendingDataArray }} />
-                                    )}
-                                </Card>
-                            </Row>
-                        </>
-                    )}
-                    <TransactionSearch
-                        transactions={transactions}
-                        exportToCsv={exportToCsv}
-                        fetchTransactions={fetchTransactions}
-                        addTransaction={addTransaction}
-                    />
-                </>
-            )}
+                                    <Col xs={24} sm={12} md={12} lg={12}>
+                                        <Card bordered={true} className={cardClass}>
+                                            <h2 className="text-2xl font-semibold text-gray-800">Total Spending</h2>
+                                            {spendingDataArray.length === 0 ? (
+                                                <p className="text-gray-500">Seems like you haven't spent anything till now...</p>
+                                            ) : (
+                                                <Pie {...{ ...spendingConfig, data: spendingDataArray }} />
+                                            )}
+                                        </Card>
+                                    </Col>
+                                </Row>
+                            </>
+                        )}
+                        <TransactionSearch
+                            transactions={transactions}
+                            exportToCsv={exportToCsv}
+                            fetchTransactions={fetchTransactions}
+                            addTransaction={addTransaction}
+                        />
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

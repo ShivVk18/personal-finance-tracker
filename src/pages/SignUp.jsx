@@ -50,6 +50,13 @@ function SignUp() {
   const signUpWithEmail = async (e) => {
     setLoading(true);
     e.preventDefault();
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match!");
+      setLoading(false);
+      return;
+    }
+
     try {
       const result = await createUserWithEmailAndPassword(
         auth,
@@ -109,48 +116,48 @@ function SignUp() {
   return (
     <>
       <Header />
-      <div className="flex justify-center items-center w-screen h-screen">
+      <div className="flex justify-center items-center w-full h-screen bg-gray-100 px-4">
         {flag ? (
-          <div className="bg-white shadow-lg rounded-lg p-8 w-1/3 min-w-[400px]">
-            <h2 className="text-center text-2xl font-bold mb-4">
+          <div className="bg-blue-50 shadow-lg rounded-lg p-8 w-full sm:w-1/2 md:w-1/3 border border-blue-200">
+            <h2 className="text-center text-2xl font-bold mb-4 text-blue-700">
               Log In on{" "}
-              <span className="text-blue-500">Financely</span>
+              <span className="text-blue-500">Financiphy</span>
             </h2>
             <form onSubmit={signUpWithEmail}>
               <div className="mb-4">
-                <p className="text-black">Email</p>
+                <p className="text-gray-800">Email</p>
                 <input
                   type="email"
-                  placeholder="JohnDoe@gmail.com"
+                  placeholder="abc@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border-b border-black py-2 placeholder-gray-500 focus:outline-none"
+                  className="w-full border-b border-blue-500 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <div className="mb-4">
-                <p className="text-black">Password</p>
+                <p className="text-gray-800">Password</p>
                 <input
                   type="password"
-                  placeholder="Example123"
+                  placeholder="123456"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border-b border-black py-2 placeholder-gray-500 focus:outline-none"
+                  className="w-full border-b border-blue-500 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <button
                 disabled={loading}
-                className="w-full text-blue-500 border border-blue-500 rounded py-2 mt-4 hover:bg-blue-500 hover:text-white transition"
+                className="w-full text-white bg-blue-500 rounded py-2 mt-4 hover:bg-blue-600 transition"
                 onClick={signInWithEmail}
               >
                 {loading ? "Loading..." : "Log In with Email and Password"}
               </button>
             </form>
-            <p className="text-center my-2">or</p>
+            <p className="text-center my-2 text-gray-600">or</p>
             <button
               disabled={loading}
-              className="w-full bg-blue-500 text-white rounded py-2 mt-2 hover:bg-white hover:text-blue-500 border-blue-500 transition"
+              className="w-full bg-blue-500 text-white rounded py-2 mt-2 hover:bg-blue-600 transition"
               onClick={signInWithGoogle}
             >
               {loading ? "Loading..." : "Log In with Google"}
@@ -163,66 +170,66 @@ function SignUp() {
             </p>
           </div>
         ) : (
-          <div className="bg-white shadow-lg rounded-lg p-8 w-1/3 min-w-[400px]">
-            <h2 className="text-center text-2xl font-bold mb-4">
+          <div className="bg-blue-50 shadow-lg rounded-lg p-8 w-full sm:w-1/2 md:w-1/3 border border-blue-200">
+            <h2 className="text-center text-2xl font-bold mb-4 text-blue-700">
               Sign Up on{" "}
               <span className="text-blue-500">Financely</span>
             </h2>
             <form onSubmit={signUpWithEmail}>
               <div className="mb-4">
-                <p className="text-black">Full Name</p>
+                <p className="text-gray-800">Full Name</p>
                 <input
                   type="text"
-                  placeholder="John Doe"
+                  placeholder="Shivansh"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full border-b border-black py-2 placeholder-gray-500 focus:outline-none"
+                  className="w-full border-b border-blue-500 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="mb-4">
-                <p className="text-black">Email</p>
+                <p className="text-gray-800">Email</p>
                 <input
                   type="email"
-                  placeholder="JohnDoe@gmail.com"
+                  placeholder="abc@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border-b border-black py-2 placeholder-gray-500 focus:outline-none"
+                  className="w-full border-b border-blue-500 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <div className="mb-4">
-                <p className="text-black">Password</p>
+                <p className="text-gray-800">Password</p>
                 <input
                   type="password"
-                  placeholder="Example123"
+                  placeholder="123456"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border-b border-black py-2 placeholder-gray-500 focus:outline-none"
+                  className="w-full border-b border-blue-500 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <div className="mb-4">
-                <p className="text-black">Confirm Password</p>
+                <p className="text-gray-800">Confirm Password</p>
                 <input
                   type="password"
-                  placeholder="Example123"
+                  placeholder="123456"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full border-b border-black py-2 placeholder-gray-500 focus:outline-none"
+                  className="w-full border-b border-blue-500 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full text-blue-500 border border-blue-500 rounded py-2 mt-4 hover:bg-blue-500 hover:text-white transition"
+                className="w-full text-white bg-blue-500 rounded py-2 mt-4 hover:bg-blue-600 transition"
               >
                 {loading ? "Loading..." : "Sign Up with Email and Password"}
               </button>
             </form>
-            <p className="text-center my-2">or</p>
+            <p className="text-center my-2 text-gray-600">or</p>
             <button
               disabled={loading}
-              className="w-full bg-blue-500 text-white rounded py-2 mt-2 hover:bg-white hover:text-blue-500 border-blue-500 transition"
+              className="w-full bg-blue-500 text-white rounded py-2 mt-2 hover:bg-blue-600 transition"
               onClick={signInWithGoogle}
             >
               {loading ? "Loading..." : "Sign Up with Google"}
@@ -231,7 +238,7 @@ function SignUp() {
               onClick={() => setFlag(!flag)}
               className="text-center mt-4 text-gray-500 cursor-pointer"
             >
-              Or Have An Account Already? Click Here
+              Or Already Have An Account? Click Here.
             </p>
           </div>
         )}

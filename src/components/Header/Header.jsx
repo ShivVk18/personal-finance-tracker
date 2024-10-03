@@ -5,42 +5,50 @@ import { auth } from "../../firebase";
 import userSvg from "../../assets/user.svg";
 
 function Header() {
-  const [user] = useAuthState(auth);
-  const navigate = useNavigate();
+    const [user, loading] = useAuthState(auth);
+    const navigate = useNavigate();
 
-  function logout() {
-    auth.signOut();
-    navigate("/");
-  }
+    // Handle logout
+    const logout = async () => {
+        await auth.signOut();
+        navigate("/");
+    };
 
-  useEffect(() => {
-    if (!user) {
-      navigate("/");
-    } else {
-      navigate("/dashboard");
-    }
-  }, [user, navigate]);
+    useEffect(() => {
+        if (!loading) {
+            if (!user) {
+                navigate("/");
+            } else {
+                navigate("/dashboard");
+            }
+        }
+    }, [user, loading, navigate]);
 
-  return (
-    <div className="sticky w-full p-3 bg-theme flex justify-between items-center">
-      <p className="text-white font-medium text-lg m-0">Financiphy</p>
-      {user ? (
-        <p className="text-gray-300 font-medium text-base cursor-pointer" onClick={logout}>
-          <span className="mr-4">
-            <img
-              src={user.photoURL ? user.photoURL : userSvg}
-              width={user.photoURL ? "32" : "24"}
-              className="rounded-full"
-              alt="User Avatar"
-            />
-          </span>
-          Logout
-        </p>
-      ) : (
-        <></>
-      )}
-    </div>
-  );
+    return (
+        <header className="bg-gradient-to-r from-teal-500 to-cyan-500 sticky top-0 w-full py-4 px-4 md:px-6 flex justify-between items-center shadow-lg z-50 transition duration-300 ease-in-out">
+            <Link to="/" className="text-white text-2xl md:text-3xl font-extrabold transition duration-300 hover:text-gray-200">
+                Financiphy
+            </Link>
+            <div className="flex items-center">
+                {user ? (
+                    <>
+                        <img
+                            src={user.photoURL ? user.photoURL : userSvg}
+                            width={user.photoURL ? "40" : "30"}
+                            className="rounded-full mr-3 transition-transform duration-300 transform hover:scale-110"
+                            alt="User"
+                        />
+                        <p
+                            className="text-white font-semibold cursor-pointer hover:underline transition duration-300"
+                            onClick={logout}
+                        >
+                            Logout
+                        </p>
+                    </>
+                ) : null}
+            </div>
+        </header>
+    );
 }
 
 export default Header;

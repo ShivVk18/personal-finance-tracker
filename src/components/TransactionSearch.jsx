@@ -1,24 +1,17 @@
-import React, { useRef, useState } from "react";
-import { Input, Table, Select, Radio } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import React, {  useState } from "react";
+import { Table, Select, Radio } from "antd";
 import search from "../assets/search.svg";
 import { parse } from "papaparse";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
-function TransactionSearch({
-  transactions,
-  exportToCsv,
-  addTransaction,
-  fetchTransactions,
-}) {
+function TransactionSearch({ transactions, exportToCsv, addTransaction, fetchTransactions }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [sortKey, setSortKey] = useState("");
-  const fileInput = useRef();
+  
 
   function importFromCsv(event) {
     event.preventDefault();
@@ -97,18 +90,45 @@ function TransactionSearch({
   }));
 
   return (
-    <div className="w-full px-8">
-      <div className="flex justify-between items-center gap-4 mb-4">
-        <div className="flex items-center gap-2">
-          <img src={search} width="16" alt="search" />
+    <div className="w-full p-4 sm:px-6 md:px-8 lg:px-12 bg-gray-50 rounded-lg shadow-lg">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">My Transactions</h2>
+        <div className="flex flex-col sm:flex-row items-center gap-4 mt-4 sm:mt-0">
+          <button
+            className="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 transition duration-200"
+            onClick={exportToCsv}
+          >
+            Export to CSV
+          </button>
+          <label
+            htmlFor="file-csv"
+            className="bg-blue-600 text-white px-4 py-2 rounded-md shadow cursor-pointer hover:bg-blue-700 transition duration-200"
+          >
+            Import from CSV
+          </label>
           <input
+            onChange={importFromCsv}
+            id="file-csv"
+            type="file"
+            accept=".csv"
+            required
+            className="hidden"
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row justify-between gap-4 mb-4">
+        <div className="flex items-center gap-2 border border-gray-300 rounded-md bg-white shadow-sm w-full sm:w-auto">
+          <img src={search} width="16" alt="Search Icon" className="p-2" />
+          <input
+            type="text"
             placeholder="Search by Name"
+            className="border-none outline-none px-4 py-2 w-full"
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="border rounded-md px-2 py-1"
           />
         </div>
         <Select
-          className="border rounded-md"
+          className="w-full sm:w-48"
           onChange={(value) => setTypeFilter(value)}
           value={typeFilter}
           placeholder="Filter"
@@ -120,43 +140,19 @@ function TransactionSearch({
         </Select>
       </div>
 
-      <div className="my-4">
-        <div className="flex justify-between items-center w-full mb-4">
-          <h2 className="text-xl font-semibold">My Transactions</h2>
-
-          <Radio.Group
-            className="flex items-center gap-4"
-            onChange={(e) => setSortKey(e.target.value)}
-            value={sortKey}
-          >
-            <Radio.Button value="">No Sort</Radio.Button>
-            <Radio.Button value="date">Sort by Date</Radio.Button>
-            <Radio.Button value="amount">Sort by Amount</Radio.Button>
-          </Radio.Group>
-
-          <div className="flex items-center gap-4 w-[400px]">
-            <button className="btn bg-gray-500 text-white py-2 px-4 rounded" onClick={exportToCsv}>
-              Export to CSV
-            </button>
-            <label
-              htmlFor="file-csv"
-              className="btn bg-blue-500 text-white py-2 px-4 rounded cursor-pointer"
-            >
-              Import from CSV
-            </label>
-            <input
-              onChange={importFromCsv}
-              id="file-csv"
-              type="file"
-              accept=".csv"
-              required
-              className="hidden"
-            />
-          </div>
-        </div>
-
-        <Table columns={columns} dataSource={dataSource} />
+      <div className="flex justify-between items-center mb-4">
+        <Radio.Group
+          className="flex items-center"
+          onChange={(e) => setSortKey(e.target.value)}
+          value={sortKey}
+        >
+          <Radio.Button value="" className="mr-2">No Sort</Radio.Button>
+          <Radio.Button value="date" className="mr-2">Sort by Date</Radio.Button>
+          <Radio.Button value="amount">Sort by Amount</Radio.Button>
+        </Radio.Group>
       </div>
+
+      <Table columns={columns} dataSource={dataSource} pagination={false} />
     </div>
   );
 }
