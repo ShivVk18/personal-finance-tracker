@@ -173,7 +173,7 @@ function SignUp() {
           <div className="bg-blue-50 shadow-lg rounded-lg p-8 w-full sm:w-1/2 md:w-1/3 border border-blue-200">
             <h2 className="text-center text-2xl font-bold mb-4 text-blue-700">
               Sign Up on{" "}
-              <span className="text-blue-500">Financely</span>
+              <span className="text-blue-500">Financiphy</span>
             </h2>
             <form onSubmit={signUpWithEmail}>
               <div className="mb-4">
